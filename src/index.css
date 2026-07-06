@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-paper text-ink font-sans antialiased;
+}
+
+/* Financial / quantitative data always renders in tabular mono figures,
+   like ledger entries — this is the one consistent "signature" thread
+   running through every table, card, and form in the app. */
+.figure {
+  @apply font-mono tabular-nums;
+}
+
+h1, h2, h3 {
+  @apply font-display;
+}
+
+/* Signature motif: a torn-receipt edge, used only on the dashboard's
+   summary cards row (see pages/dashboard) — not repeated elsewhere. */
+.receipt-edge {
+  position: relative;
+}
+.receipt-edge::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 6px;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 4px,
+    theme('colors.paper.DEFAULT') 4px 8px
+  );
+  background-size: 12px 12px;
+  mask-image: radial-gradient(circle at 4px 0, transparent 4px, black 4.5px);
+  mask-size: 8px 8px;
+  mask-repeat: repeat-x;
+}
+
+::selection {
+  @apply bg-register-100;
+}
+
+:focus-visible {
+  outline: 2px solid theme('colors.register.500');
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
