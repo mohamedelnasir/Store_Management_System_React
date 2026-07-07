@@ -9,7 +9,7 @@ import { ROLE_LABELS } from '../../utils/constants'
 
 function buildSchema(isEditing) {
   return z.object({
-    name: z.string().min(1, 'Name is required'),
+    fullName: z.string().min(1, 'Name is required'),
     email: z.string().email('Enter a valid email address'),
     password: isEditing
       ? z.string().optional().or(z.literal(''))
@@ -50,8 +50,8 @@ export function UserForm({ open, onClose, onSubmit, initialValues, isSubmitting 
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <FormField label="Name" error={errors.name?.message} required>
-          <Input {...register('name')} />
+        <FormField label="Name" error={errors.fullName?.message} required>
+          <Input {...register('fullName')} />
         </FormField>
         <FormField label="Email" error={errors.email?.message} required>
           <Input type="email" {...register('email')} />

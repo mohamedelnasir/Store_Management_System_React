@@ -94,12 +94,11 @@ export default function Users() {
         isLoading={isLoading}
         emptyMessage="No users found."
         columns={[
-          { key: 'name', header: 'Name' },
+          { key: 'fullName', header: 'Name' },
           { key: 'email', header: 'Email' },
           {
             key: 'role',
             header: 'Role',
-            render: (r) => <StatusBadge tone="neutral">{ROLE_LABELS[r.role]}</StatusBadge>,
           },
           {
             key: 'actions',
