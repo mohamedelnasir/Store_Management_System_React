@@ -29,7 +29,7 @@ export default function Expenses() {
   )
   const { data: expenses, isLoading, refetch } = useFetch(fetchExpenses, [fetchExpenses])
 
-  const fetchSummary = useCallback(() => expensesApi.monthlySummary(), [])
+  const fetchSummary = useCallback(() => expensesApi.monthlySummary({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 }), [])
   const { data: summary } = useFetch(fetchSummary, [])
 
   const breakdown = (summary?.breakdown || []).map((b) => ({
@@ -100,11 +100,11 @@ export default function Expenses() {
             isLoading={isLoading}
             emptyMessage="No expenses recorded for this period."
             columns={[
-              { key: 'date', header: 'Date', className: 'figure', render: (r) => formatDate(r.date) },
+              { key: 'createdAt', header: 'Date', className: 'figure', render: (r) => formatDate(r.createdAt) },
               {
                 key: 'category',
                 header: 'Category',
-                render: (r) => EXPENSE_CATEGORY_LABELS[r.categoryId] ?? r.categoryId,
+                
               },
               { key: 'note', header: 'Note' },
               { key: 'amount', header: 'Amount', className: 'figure', render: (r) => formatCurrency(r.amount) },

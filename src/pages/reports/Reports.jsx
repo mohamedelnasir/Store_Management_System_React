@@ -7,6 +7,7 @@ import { Button } from '../../components/Button'
 import { Select, Input } from '../../components/FormField'
 import { useFetch } from '../../hooks/useFetch'
 import { useAuth } from '../../hooks/useAuth'
+import { SummaryCard } from '../../components/SummaryCard'
 import { reportsApi } from '../../api/reportsApi'
 import { formatCurrency, formatDate } from '../../utils/formatters'
 import {
@@ -26,22 +27,55 @@ const REPORT_FETCHERS = {
 
 const COLUMNS_BY_TYPE = {
   [REPORT_TYPES.SALES]: [
-    { key: 'date', header: 'Date', className: 'figure', render: (r) => formatDate(r.date) },
-    { key: 'invoiceCount', header: 'Invoices', className: 'figure' },
-    { key: 'total', header: 'Total', className: 'figure', render: (r) => formatCurrency(r.total) },
+    { key: "productName", header: "Product" },
+    { key: "quantitySold", header: "Quantity" },
+    {
+      key: "revenue",
+      header: "Revenue",
+      render: r => formatCurrency(r.revenue),
+    },
   ],
   [REPORT_TYPES.EXPENSES]: [
-    { key: 'date', header: 'Date', className: 'figure', render: (r) => formatDate(r.date) },
-    { key: 'category', header: 'Category' },
-    { key: 'total', header: 'Total', className: 'figure', render: (r) => formatCurrency(r.total) },
-  ],
+  {
+    key: 'category',
+    header: 'Category',
+  },
+  {
+    key: 'total',
+    header: 'Amount',
+    render: (r) => formatCurrency(r.total),
+  },
+],
   [REPORT_TYPES.INVENTORY]: [
-    { key: 'productName', header: 'Product' },
-    { key: 'purchased', header: 'Purchased', className: 'figure' },
-    { key: 'sold', header: 'Sold', className: 'figure' },
-    { key: 'adjusted', header: 'Adjusted', className: 'figure' },
-    { key: 'endingQuantity', header: 'Ending qty', className: 'figure' },
-  ],
+  {
+    key: 'productName',
+    header: 'Product',
+  },
+  {
+    key: 'currentQuantity',
+    header: 'Current Qty',
+  },
+  {
+    key: 'purchased',
+    header: 'Purchased',
+  },
+  {
+    key: 'sold',
+    header: 'Sold',
+  },
+  {
+    key: 'returned',
+    header: 'Returned',
+  },
+  {
+    key: 'damaged',
+    header: 'Damaged',
+  },
+  {
+    key: 'adjusted',
+    header: 'Adjusted',
+  },
+],
   [REPORT_TYPES.PAYROLL]: [
     { key: 'employeeName', header: 'Employee' },
     { key: 'baseSalary', header: 'Base', className: 'figure', render: (r) => formatCurrency(r.baseSalary) },
@@ -78,19 +112,52 @@ export default function Reports() {
   }, [reportType, period, dateFrom, dateTo])
   const { data, isLoading } = useFetch(fetchReport, [fetchReport])
 
-  const rows = data?.rows || data || []
-  const chartData = data?.chart
+  let rows = []
+let chartData = []
+
+switch (reportType) {
+  case REPORT_TYPES.SALES:
+    rows = data?.topProducts ?? []
+
+    chartData =
+      rows.map((x) => ({
+        label: x.productName,
+        value: x.revenue,
+      }))
+    break
+
+  case REPORT_TYPES.EXPENSES:
+    rows = data?.byCategory ?? []
+
+    chartData =
+      rows.map((x) => ({
+        label: x.category,
+        value: x.total,
+      }))
+    break
+
+  case REPORT_TYPES.INVENTORY:
+    rows = data?.lines ?? []
+    break
+
+  case REPORT_TYPES.PAYROLL:
+    rows = []
+    break
+
+  case REPORT_TYPES.PROFIT_AND_LOSS:
+    rows = []
+    break
+
+  default:
+    rows = []
+}
 
   return (
     <div>
       <PageHeader
         title="Reports"
         description="Run reports across sales, expenses, inventory, payroll, and profit & loss."
-        actions={
-          <Button variant="secondary">
-            <Download size={16} /> Export CSV
-          </Button>
-        }
+        
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -115,6 +182,78 @@ export default function Reports() {
           </>
         )}
       </div>
+      <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+
+  {reportType === REPORT_TYPES.SALES && data && (
+    <>
+      <SummaryCard
+        title="Total Sales"
+        value={data.totalSalesCount}
+      />
+
+      <SummaryCard
+        title="Revenue"
+        value={formatCurrency(data.totalRevenue)}
+      />
+    </>
+  )}
+
+  {reportType === REPORT_TYPES.EXPENSES && data && (
+    <SummaryCard
+      title="Total Expenses"
+      value={formatCurrency(data.totalExpenses)}
+    />
+  )}
+
+  {reportType === REPORT_TYPES.PAYROLL && data && (
+    <>
+      <SummaryCard
+        title="Employees"
+        value={data.employeeCount}
+      />
+
+      <SummaryCard
+        title="Net Salaries"
+        value={formatCurrency(data.totalNetSalaries)}
+      />
+
+      <SummaryCard
+        title="Bonuses"
+        value={formatCurrency(data.totalBonuses)}
+      />
+
+      <SummaryCard
+        title="Deductions"
+        value={formatCurrency(data.totalDeductions)}
+      />
+    </>
+  )}
+
+  {reportType === REPORT_TYPES.PROFIT_AND_LOSS && data && (
+    <>
+      <SummaryCard
+        title="Revenue"
+        value={formatCurrency(data.revenue)}
+      />
+
+      <SummaryCard
+        title="COGS"
+        value={formatCurrency(data.costOfGoodsSold)}
+      />
+
+      <SummaryCard
+        title="Gross Profit"
+        value={formatCurrency(data.grossProfit)}
+      />
+
+      <SummaryCard
+        title="Net Profit"
+        value={formatCurrency(data.netProfit)}
+      />
+    </>
+  )}
+
+</div>
 
       {chartData && chartData.length > 0 && (
         <div className="mb-6 rounded-md border border-slate-200 bg-white p-5 shadow-card">
@@ -132,12 +271,14 @@ export default function Reports() {
         </div>
       )}
 
-      <Table
-        isLoading={isLoading}
-        emptyMessage="No data for this report and period."
-        columns={COLUMNS_BY_TYPE[reportType]}
-        rows={rows}
-      />
+     {rows.length > 0 && (
+  <Table
+    isLoading={isLoading}
+    emptyMessage="No data."
+    columns={COLUMNS_BY_TYPE[reportType]}
+    rows={rows}
+  />
+)}
     </div>
   )
 }
