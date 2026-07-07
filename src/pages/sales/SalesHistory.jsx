@@ -55,9 +55,9 @@ export default function SalesHistory() {
               </Link>
             ),
           },
-          { key: 'date', header: 'Date', className: 'figure', render: (r) => formatDateTime(r.date) },
-          { key: 'cashier', header: 'Cashier', render: (r) => r.cashierName },
-          { key: 'itemCount', header: 'Items', className: 'figure' },
+          { key: 'createdAt', header: 'Date', className: 'figure', render: (r) => formatDateTime(r.createdAt) },
+          { key: 'createdByUserName', header: 'Cashier', render: (r) => r.createdByUserName },
+          { key: 'items', header: 'Items', className: 'figure', render: (r) => r.items.length },
           { key: 'total', header: 'Total', className: 'figure', render: (r) => formatCurrency(r.total) },
         ]}
         rows={sales}

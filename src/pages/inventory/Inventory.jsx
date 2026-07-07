@@ -79,18 +79,18 @@ export default function Inventory() {
         isLoading={isLoading}
         emptyMessage="No inventory movements recorded yet."
         columns={[
-          { key: 'date', header: 'Date', className: 'figure', render: (r) => formatDateTime(r.date) },
+          { key: 'createdAt', header: 'Date', className: 'figure', render: (r) => formatDateTime(r.createdAt) },
           { key: 'product', header: 'Product', render: (r) => r.productName },
           {
             key: 'type',
             header: 'Type',
-            render: (r) => <StatusBadge tone="neutral">{INVENTORY_TRANSACTION_LABELS[r.type]}</StatusBadge>,
+            render: (r) => r.type,
           },
           {
-            key: 'quantity',
+            key: 'quantityChange',
             header: 'Quantity',
             className: 'figure',
-            render: (r) => (r.quantity > 0 ? `+${r.quantity}` : r.quantity),
+            render: (r) => (r.quantityChange > 0 ? `+${r.quantityChange}` : r.quantityChange),
           },
           { key: 'note', header: 'Note' },
         ]}
