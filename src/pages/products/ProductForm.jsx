@@ -76,7 +76,7 @@ export function ProductForm({ open, onClose, onSubmit, initialValues, categories
         <FormField label="Barcode" error={errors.barcode?.message}>
           <Input {...register('barcode')} />
         </FormField>
-        <FormField label="Category" error={errors.categoryId?.message} required>
+        <FormField label="Category" error={errors.categoryNme?.message} required>
           <Select {...register('categoryId')}>
             <option value="">Select a category</option>
             {categories.map((c) => (
